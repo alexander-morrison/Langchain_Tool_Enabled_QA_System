@@ -75,8 +75,8 @@ def planet_distance_sun(planet_name: str) -> str:
 # TOOL 2 — Revolution Period Tool
 # ------------------------------------
 
-# Expose this function as a tool named "PlanetRevolutionPeriod".
-# This allows the LLM to see and call this function.
+# Expose this function as a tool named "PlanetRevolutionPeriod"
+# This allows the LLM to see and call this function
 @tool("PlanetRevolutionPeriod")
 
 # Define a function named planet_revolution_period.
@@ -108,9 +108,34 @@ def planet_revolution_period(planet_name: str) -> str:
         f"Information about the revolution period of {planet_name} is not available in this tool."
     ) 
 
-        
+# ------------------------------------
+# TOOL 3 — General Planet Information
+# ------------------------------------
 
+# Expose this function as a tool named "PlanetGeneral Info"
+@tool("PlanetGeneralInfo")
 
+# Define a function named planet_general_info
+# It accepts one argument: question (must be a string)
+# It returns a string
+def planet_general_info(question: str) -> str:
+    
+    # This description tells the LLM when to use this tool.
+    # It will use this for general knowledge questions.
+    """Searches the planet knowledge base and returns relevant information."""
+
+    # Perform similarity search in vector database.i
+    # question = user query
+    # k=1 = return top 1 most relevant document
+
+    results = vectorestore.similarity_Search(question, k=1)
+
+    # If results found, return the page content.
+    if results:
+        return results[0].page_content
+
+    # Fall back message if nothing found
+    return "No relevant information found in the planet knowledge base."
 
 
 
