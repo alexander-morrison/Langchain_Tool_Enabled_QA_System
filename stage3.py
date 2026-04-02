@@ -13,6 +13,9 @@ from langchain_community.document_loaders import DirectoryLoader, TextLoader
 # Load environment variables (including OpenAI_API_KEUY)
 dotenv.load_dotenv()
 
+# Create embedding model
+embeddings = OpenAIEmbeddings()
+
 # Create a loader to read all .txt files from the "planets" directory
 loader = DirectoryLoader(
     # folder containing planet text files
@@ -26,3 +29,21 @@ loader = DirectoryLoader(
 # Load all documents from the planets directory.
 documents = loader.load()
 
+# Create a Chroma vector store from the loaded documents
+vectorstore = Chroma.from_documents(
+    # the planet text documents
+    documents,
+    # the embedding model used to convert them into vectors
+    embeddings    
+)
+
+# Get the user's query from input
+query = input()
+
+# Search the vector store for the most similar document to the query
+results = vectorstore.similarity_search(query, k=1)
+
+# Print the most relevant document.
+# If at least one document was found.
+# Print the content of the most similar document.
+print(results[0].page_content)
