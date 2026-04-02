@@ -40,6 +40,10 @@ vectorstore = Chroma.from_documents(
     embeddings
 )
 
+# -------------------------------
+# TOOL 1 — Distance from the Sun
+# -------------------------------
+
 # Expose this function as a tool the LLM can use.
 @tool("PlanetDistanceSun")
 
@@ -67,7 +71,58 @@ def planet_distance_sun(planet_name: str) -> str:
         f"Information about the distance of {planet_name} from the Sun is not available in this tool."
     )
 
+# ------------------------------------
+# TOOL 2 — Revolution Period Tool
+# ------------------------------------
+
+# Expose this function as a tool named "PlanetRevolutionPeriod".
+# This allows the LLM to see and call this function.
+@tool("PlanetRevolutionPeriod")
+
+# Define a function named planet_revolution_period.
+# It accepts one argument: planet_name (must be a string).
+# It returns a string.
+def planet_revolution_period(planet_name: str) -> str:
+    
+    # This docstring explains what the tool does.
+    # The LLM reads this description to decide when to use it.
+    """Returns the approximate revolution period of a planet in Earth years."""
+   
+    # Create a dictionary that maps planet names to their revolution periods
+    periods = {
+        # If the planet is Earth, return 1 Earth year.
+        "Earth": "Earth takes approximately 1 Earth year to revolve around the Sun.",
+        # If the planet is Mars, return 1.88 Earth years.
+        "Mars": "Mars takes approximately 1.88 Earth years to revolve around the Sun.",
+        # If the planet is Jupiter, return 11.86 Earth years.
+        "Jupiter": "Jupiter takes approximately 11.86 Earth years to revolve around the Sun.",
+        # If the planet is Pluto return 248 Earth years.
+        "Pluto": "Pluto takes approximately 248 Earth years to revolve around the Sun."
+    }
+
+    # Look up the given planet name inside the dictionary.
+    # If found -> return the stored revolution period.
+    # If not found -> return the fallback message.
+    return periods.get(
+        planet_name,
+        f"Information about the revolution period of {planet_name} is not available in this tool."
+    ) 
+
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
