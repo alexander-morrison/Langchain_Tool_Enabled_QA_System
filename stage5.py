@@ -127,3 +127,95 @@ tools = [
 # Bind tools to the model
 model_with_tools = llm.bind_tools(tools)
 
+# Create a prompt template to format the user's question
+# before sending it to the language model.
+prompt = PromptTemplate(
+    input_variables=["question"],
+    template="You are a helpful assistant who answers questions users may have. You are asked: {question}."
+)
+
+# Create a function that executes the tool selected by the model.
+# If the model does not call a tool, return the normal model response.
+def run_tools(response):
+    
+    # Check if the model decided to call a tool.
+    if response.tool_calls:
+
+        # Get the first tool call from the model's response.
+        tool_call = response.tool_calls[0]        
+
+        # If the model selected the distance tool, execute it.
+        if tool_call["name"] == "PlanetDistanceSun":
+            return planet_distance_sun.invoke(tool_call)
+
+        # If the model selected the revolution period tool, execute it.
+        elif tool_call["name"] == "PlanetRevolutionPeriod":
+            return planet_revolution_period.invoke(tool_call)
+
+        # If the model selected the general information tool, execute it.
+        elif tool_call["name"] == "PlanetGeneralInfo":
+            return planet_general_info.invoke(tool_call)
+
+    # If no tool was selected, return the model's normal text response.
+    return response.content
+
+# Convert the run_tools function into a runnable so it can be used
+# as part of the LangChain pipeline.
+tool_runner = RunnableLambda(run_tools)
+
+# Combine the prompt, model with tools, and tool runner into one pipeline.
+# The output of each step is passed to the next using the | operator.
+chain = prompt | model_with_tools | tool_runner
+
+# Wait for the user to enter a question.
+query = input()
+
+# Invoke the full chain by passing the question into the prompt template.
+result = chain.invoke({"question": query})
+
+# Print the final result (either tool output or normal model response).
+print(result)
+
+# Print the chain structure (required for Stage 5 grader).
+print(chain)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
